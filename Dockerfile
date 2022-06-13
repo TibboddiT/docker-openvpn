@@ -1,21 +1,21 @@
 # Original credit: https://github.com/jpetazzo/dockvpn
 
 # Smallest base image
-FROM alpine:3.5
+FROM alpine:latest
 
-MAINTAINER Kyle Manna <kyle@kylemanna.com>
+LABEL maintainer="Kyle Manna <kyle@kylemanna.com>"
 
-RUN echo "http://dl-4.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
-    echo "http://dl-4.alpinelinux.org/alpine/edge/testing/" >> /etc/apk/repositories && \
-    apk add --update openvpn iptables bash easy-rsa openvpn-auth-pam google-authenticator pamtester && \
+# Testing: pamtester
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing/" >> /etc/apk/repositories && \
+    apk add --update openvpn iptables bash easy-rsa openvpn-auth-pam google-authenticator pamtester libqrencode && \
     ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/*
 
 # Needed by scripts
-ENV OPENVPN /etc/openvpn
-ENV EASYRSA /usr/share/easy-rsa
-ENV EASYRSA_PKI $OPENVPN/pki
-ENV EASYRSA_VARS_FILE $OPENVPN/vars
+ENV OPENVPN=/etc/openvpn
+ENV EASYRSA=/usr/share/easy-rsa \
+    EASYRSA_CRL_DAYS=3650 \
+    EASYRSA_PKI=$OPENVPN/pki
 
 VOLUME ["/etc/openvpn"]
 
